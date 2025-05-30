@@ -171,7 +171,7 @@ export const getOrdersCurrentUser = async (
 
         const MAX_LIMIT = 10;
         if(Number(limit)>MAX_LIMIT)  limit = MAX_LIMIT;
-        
+
         const options = {
             skip: (Number(page) - 1) * Number(limit),
             limit: Number(limit),
@@ -296,7 +296,12 @@ export const getOrderCurrentUserByNumber = async (
     }
 }
 
+
 // POST /product
+
+const window = new JSDOM('').window;
+const purify = DOMPurify(window);
+
 export const createOrder = async (
     req: Request,
     res: Response,
@@ -308,6 +313,9 @@ export const createOrder = async (
         const userId = res.locals.user._id
         const { address, payment, phone, total, email, items, comment } =
             req.body
+
+        const sanitizedComment = comment ? purify.sanitize(comment as string) : undefined;
+
 
         items.forEach((id: Types.ObjectId) => {
             const product = products.find((p) => p._id.equals(id))
@@ -330,7 +338,7 @@ export const createOrder = async (
             payment,
             phone,
             email,
-            comment,
+            comment: sanitizedComment,
             customer: userId,
             deliveryAddress: address,
         })
@@ -401,3 +409,4 @@ export const deleteOrder = async (
         return next(error)
     }
 }
+
