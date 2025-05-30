@@ -1,10 +1,13 @@
 import { NextFunction, Request, Response } from 'express'
 import { FilterQuery, Error as MongooseError, Types } from 'mongoose'
+import { JSDOM } from 'jsdom';
+import DOMPurify from 'dompurify'; 
 import BadRequestError from '../errors/bad-request-error'
 import NotFoundError from '../errors/not-found-error'
 import Order, { IOrder } from '../models/order'
 import Product, { IProduct } from '../models/product'
 import User from '../models/user'
+
 
 // eslint-disable-next-line max-len
 // GET /orders?page=2&limit=5&sort=totalAmount&order=desc&orderDateFrom=2024-07-01&orderDateTo=2024-08-01&status=delivering&totalAmountFrom=100&totalAmountTo=1000&search=%2B1
@@ -299,7 +302,7 @@ export const getOrderCurrentUserByNumber = async (
 
 // POST /product
 
-const window = new JSDOM('').window;
+const {window} = new JSDOM('');
 const purify = DOMPurify(window);
 
 export const createOrder = async (
