@@ -15,7 +15,7 @@ export const orderValidation = {
       orderDateTo: Joi.string().isoDate().optional(),
       search: Joi.string().trim().optional().allow(''),
       
-      limit: Joi.number().integer().min(1).max(10).optional().default(10),
+      limit: Joi.number().integer().min(1).optional().default(10),
     }).unknown(false)
       .messages({
         'object.unknown': 'Недопустимый параметр запроса. Возможно, попытка инъекции.',
@@ -28,7 +28,7 @@ export const orderValidation = {
     [Segments.QUERY]: Joi.object({
       search: Joi.string().trim().optional().allow(''), // search может быть пустой строкой
       page: Joi.number().integer().min(1).optional().default(1),
-      limit: Joi.number().integer().min(1).max(5).optional().default(5),
+      limit: Joi.number().integer().min(1).optional().default(5),
     }).unknown(false) 
       .messages({
         'object.unknown': 'Недопустимый параметр запроса. Возможно, попытка инъекции.',
