@@ -1,7 +1,8 @@
 import { Joi, celebrate, Segments } from 'celebrate';
 
+
 export const orderValidation = {
-  // 1. Схема для GET /order/all (контроллер getOrders)
+
   getAllOrders: celebrate({
     [Segments.QUERY]: Joi.object({
       page: Joi.number().integer().min(1).optional().default(1),
@@ -23,7 +24,7 @@ export const orderValidation = {
       }),
   }),
 
-  // 2. Схема для GET /order/currentuser (контроллер getOrdersCurrentUser)
+
   getOrdersCurrentUser: celebrate({
     [Segments.QUERY]: Joi.object({
       search: Joi.string().trim().optional().allow(''), // search может быть пустой строкой
@@ -35,7 +36,7 @@ export const orderValidation = {
       }),
   }),
 
-  // 3. Схема для GET /order/:orderNumber (контроллер getOrderByNumber)
+
 
   getOrderByNumber: celebrate({
     [Segments.PARAMS]: Joi.object({
@@ -49,8 +50,8 @@ export const orderValidation = {
     [Segments.QUERY]: Joi.object().unknown(false), 
   }),
 
-  // 4. Схема для GET /order/currentuser/:orderNumber (контроллер getOrderCurrentUserByNumber)
-  // Здесь также orderNumber через params.
+
+
   getOrderByNumberCurrentUser: celebrate({
     [Segments.PARAMS]: Joi.object({
       orderNumber: Joi.number().integer().min(1).required().messages({
@@ -59,8 +60,44 @@ export const orderValidation = {
         'number.min': 'Номер заказа должен быть положительным.',
         'any.required': 'Номер заказа обязателен.',
       }),
-    }).unknown(false), // Запрещает любые другие параметры маршрута
-    [Segments.QUERY]: Joi.object().unknown(false), // Запрещает любые query-параметры
+    }).unknown(false), 
+    [Segments.QUERY]: Joi.object().unknown(false), 
+  }),
+
+ 
+  updateOrder: celebrate({
+    [Segments.PARAMS]: Joi.object({
+      orderNumber: Joi.number().integer().min(1).required().messages({
+        'number.base': 'Номер заказа должен быть числом.',
+        'number.integer': 'Номер заказа должен быть целым числом.',
+        'number.min': 'Номер заказа должен быть положительным.',
+        'any.required': 'Номер заказа обязателен.',
+      }),
+    }).unknown(false),
+    [Segments.BODY]: Joi.object({
+      status: Joi.string().valid('new', 'pending', 'completed', 'cancelled').required().messages({
+        'any.only': 'Статус заказа может быть только одним из: new, pending, completed, cancelled.',
+        'any.required': 'Статус заказа обязателен.',
+      }),
+    }).min(1).unknown(false)
+      .messages({
+        'object.min': 'Тело запроса не может быть пустым.',
+        'object.unknown': 'Недопустимое поле в теле запроса.',
+      }),
+  }),
+
+  
+  deleteOrder: celebrate({
+    [Segments.PARAMS]: Joi.object({
+      id: Joi.string().hex().length(24).required().messages({
+        'string.base': 'ID заказа должен быть строкой.',
+        'string.hex': 'ID заказа должен быть шестнадцатеричным.',
+        'string.length': 'ID заказа должен содержать 24 символа.',
+        'any.required': 'ID заказа обязателен.',
+      }),
+    }).unknown(false),
+    [Segments.QUERY]: Joi.object().unknown(false), // Запрещает любые query-параметры для DELETE
+    [Segments.BODY]: Joi.object().unknown(false), // Запрещает любое тело запроса для DELETE
   }),
 
 };
