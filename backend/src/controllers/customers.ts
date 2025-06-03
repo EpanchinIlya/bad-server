@@ -16,7 +16,7 @@ export const getCustomers = async (
     try {
         const {
             page = 1,
-           
+
             sortField = 'createdAt',
             sortOrder = 'desc',
             registrationDateFrom,
@@ -30,14 +30,10 @@ export const getCustomers = async (
             search,
         } = req.query
 
-        let {
-            limit = 10   
-        }= req.query
+        let { limit = 10 } = req.query
 
-
-        const MAX_LIMIT = 10;
-        if(Number(limit)>MAX_LIMIT)  limit = MAX_LIMIT;
-
+        const MAX_LIMIT = 10
+        if (Number(limit) > MAX_LIMIT) limit = MAX_LIMIT
 
         const filters: FilterQuery<Partial<IUser>> = {}
 
@@ -102,7 +98,7 @@ export const getCustomers = async (
         }
 
         if (search) {
-            const escapedSearchString = escapeRegExp(search as string);
+            const escapedSearchString = escapeRegExp(search as string)
             const searchRegex = new RegExp(escapedSearchString as string, 'i')
             const orders = await Order.find(
                 {
@@ -229,4 +225,3 @@ export const deleteCustomer = async (
         next(error)
     }
 }
-

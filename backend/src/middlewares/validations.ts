@@ -2,8 +2,8 @@ import { Joi, celebrate } from 'celebrate'
 import { Types } from 'mongoose'
 
 // eslint-disable-next-line no-useless-escape
-export const phoneRegExp = /^(?=(?:\D*\d){7,15}\D*$)^(\+\d+)?(?:\s|-?|\(?\d+\)?)+$/;
-
+export const phoneRegExp =
+    /^(?=(?:\D*\d){7,15}\D*$)^(\+\d+)?(?:\s|-?|\(?\d+\)?)+$/
 
 export enum PaymentType {
     Card = 'card',

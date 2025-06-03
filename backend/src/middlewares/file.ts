@@ -1,7 +1,7 @@
 import { Request, Express } from 'express'
 import multer, { FileFilterCallback } from 'multer'
 import path, { join } from 'path'
-import * as fs from 'fs'; 
+import * as fs from 'fs'
 
 type DestinationCallback = (error: Error | null, destination: string) => void
 type FileNameCallback = (error: Error | null, filename: string) => void
@@ -12,23 +12,20 @@ const storage = multer.diskStorage({
         _file: Express.Multer.File,
         cb: DestinationCallback
     ) => {
-
-
         const uploadDir = join(
-            __dirname, 
+            __dirname,
             process.env.UPLOAD_PATH_TEMP
                 ? `../public/${process.env.UPLOAD_PATH_TEMP}`
-                : '../public' 
-        );
+                : '../public'
+        )
 
-        
         fs.mkdir(uploadDir, { recursive: true }, (err) => {
             if (err) {
-                console.error('Ошибка при создании директории:', err);   
-                return cb(err, ''); 
+                console.error('Ошибка при создании директории:', err)
+                return cb(err, '')
             }
-            cb(null, uploadDir);
-        });
+            cb(null, uploadDir)
+        })
     },
 
     filename: (
@@ -36,9 +33,8 @@ const storage = multer.diskStorage({
         file: Express.Multer.File,
         cb: FileNameCallback
     ) => {
-        
         const ext = path.extname(file.originalname)
-        const uniqueSuffix = `${Date.now()  }-${  Math.round(Math.random() * 1E9)}`
+        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`
         const newFilename = uniqueSuffix + ext
         cb(null, newFilename)
     },
@@ -52,8 +48,7 @@ const types = [
     'image/svg+xml',
 ]
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; 
-
+const MAX_FILE_SIZE = 10 * 1024 * 1024
 
 const fileFilter = (
     _req: Request,
@@ -63,13 +58,12 @@ const fileFilter = (
     if (!types.includes(file.mimetype)) {
         return cb(null, false)
     }
-   
 
     return cb(null, true)
 }
 
-export default multer({ storage, limits: { fileSize: MAX_FILE_SIZE }, fileFilter })
-
-
-
-
+export default multer({
+    storage,
+    limits: { fileSize: MAX_FILE_SIZE },
+    fileFilter,
+})
