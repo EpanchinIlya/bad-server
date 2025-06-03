@@ -1,6 +1,7 @@
 import { Request, Express } from 'express'
 import multer, { FileFilterCallback } from 'multer'
 import { join } from 'path'
+import * as fs from 'fs'; 
 
 type DestinationCallback = (error: Error | null, destination: string) => void
 type FileNameCallback = (error: Error | null, filename: string) => void
@@ -11,15 +12,37 @@ const storage = multer.diskStorage({
         _file: Express.Multer.File,
         cb: DestinationCallback
     ) => {
-        cb(
-            null,
-            join(
-                __dirname,
-                process.env.UPLOAD_PATH_TEMP
-                    ? `../public/${process.env.UPLOAD_PATH_TEMP}`
-                    : '../public'
-            )
-        )
+
+
+        const uploadDir = join(
+            __dirname, 
+            process.env.UPLOAD_PATH_TEMP
+                ? `../public/${process.env.UPLOAD_PATH_TEMP}`
+                : '../public' 
+        );
+
+       
+        fs.mkdir(uploadDir, { recursive: true }, (err) => {
+            if (err) {
+                console.error('Ошибка при создании директории:', err);   
+                return cb(err, ''); 
+            }
+            cb(null, uploadDir);
+        });
+
+
+
+
+
+        // cb(
+        //     null,
+        //     join(
+        //         __dirname,
+        //         process.env.UPLOAD_PATH_TEMP
+        //             ? `../public/${process.env.UPLOAD_PATH_TEMP}`
+        //             : '../public'
+        //     )
+        // )
     },
 
     filename: (
