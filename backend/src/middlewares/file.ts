@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
                 : '../public' 
         );
 
-       
+        
         fs.mkdir(uploadDir, { recursive: true }, (err) => {
             if (err) {
                 console.error('Ошибка при создании директории:', err);   
@@ -53,7 +53,7 @@ const types = [
 ]
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; 
-const MIN_FILE_SIZE = 2 * 1024; 
+
 
 const fileFilter = (
     _req: Request,
@@ -63,12 +63,7 @@ const fileFilter = (
     if (!types.includes(file.mimetype)) {
         return cb(null, false)
     }
-
-     if (file.size < MIN_FILE_SIZE) {
-         if (file.size < MIN_FILE_SIZE) {
-             return cb(new Error(`Файл слишком маленький. Минимальный размер: ${MIN_FILE_SIZE / 1024} KB.`));
-}
-    }
+   
 
     return cb(null, true)
 }

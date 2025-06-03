@@ -317,6 +317,7 @@ export class WebLarekAPI extends Api implements IWebLarekAPI {
     }
 
     uploadFile = (data: FormData) => {
+       
         return this.requestWithRefresh<IFile>('/upload', {
             method: 'POST',
             body: data,
