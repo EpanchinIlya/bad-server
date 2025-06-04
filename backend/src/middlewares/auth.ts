@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { Model, Types } from 'mongoose'
+import { celebrate, Joi, Segments } from 'celebrate'
 import { ACCESS_TOKEN } from '../config'
 import ForbiddenError from '../errors/forbidden-error'
 import NotFoundError from '../errors/not-found-error'
 import UnauthorizedError from '../errors/unauthorized-error'
 import UserModel, { Role } from '../models/user'
+
 
 // есть файл middlewares/auth.js, в нём мидлвэр для проверки JWT;
 
@@ -93,5 +95,64 @@ export function currentUserAccessMiddleware<T>(
         return next()
     }
 }
+
+
+export const authValidation = {
+    login: celebrate({
+        [Segments.BODY]: Joi.object({
+            login: Joi.string().required().min(3).max(30).trim().messages({
+                'string.base': 'Логин должен быть строкой.',
+                'string.empty': 'Логин не может быть пустым.',
+                'string.min': 'Логин должен содержать не менее {#limit} символов.',
+                'string.max': 'Логин должен содержать не более {#limit} символов.',
+                'any.required': 'Логин обязателен.',
+            }),
+            password: Joi.string().required().min(6).messages({
+                'string.base': 'Пароль должен быть строкой.',
+                'string.empty': 'Пароль не может быть пустым.',
+                'string.min': 'Пароль должен содержать не менее {#limit} символов.',
+                'any.required': 'Пароль обязателен.',
+            }),
+        })
+            
+            .unknown(false)
+            .messages({
+                'object.unknown': 'Недопустимое поле в теле запроса. Возможно, попытка инъекции.',
+            }),
+    }),
+     register: celebrate({
+        [Segments.BODY]: Joi.object({
+            email: Joi.string().required().email().trim().messages({
+                'string.base': 'Email должен быть строкой.',
+                'string.empty': 'Email не может быть пустым.',
+                'string.email': 'Email должен быть действительным адресом электронной почты.',
+                'any.required': 'Email обязателен.',
+            }),
+            password: Joi.string().required().min(6).messages({
+                'string.base': 'Пароль должен быть строкой.',
+                'string.empty': 'Пароль не может быть пустым.',
+                'string.min': 'Пароль должен содержать не менее {#limit} символов.',
+                'any.required': 'Пароль обязателен.',
+            }),
+
+            name: Joi.string().required().min(2).max(100).trim().messages({
+                'string.base': 'Имя должно быть строкой.',
+                'string.empty': 'Имя не может быть пустым.',
+                'string.min': 'Имя должно содержать не менее {#limit} символов.',
+                'string.max': 'Имя должно содержать не более {#limit} символов.',
+                'any.required': 'Имя обязательно.',
+            }),
+        })
+           
+            .unknown(false)
+            .messages({
+                'object.unknown': 'Недопустимое поле в теле запроса. Возможно, попытка инъекции.',
+            }),
+    }),
+};
+
+
+
+
 
 export default auth
