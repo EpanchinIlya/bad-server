@@ -14,6 +14,7 @@ export enum Role {
 }
 
 export interface IUser extends Document {
+    _id: Types.ObjectId
     name: string
     email: string
     password: string
@@ -149,6 +150,7 @@ userSchema.methods.generateAccessToken = function generateAccessToken() {
 userSchema.methods.generateRefreshToken =
     async function generateRefreshToken() {
         const user = this
+        // const user = this as HydratedDocument<IUser, IUserMethods>;
         // Создание refresh токена возможно в контроллере авторизации/регистрации
         const refreshToken = jwt.sign(
             {

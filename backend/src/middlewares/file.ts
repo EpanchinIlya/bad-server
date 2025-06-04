@@ -1,6 +1,7 @@
 import { Request, Express } from 'express'
 import multer, { FileFilterCallback } from 'multer'
-import { join } from 'path'
+import path, { join } from 'path'
+import * as fs from 'fs'
 
 type DestinationCallback = (error: Error | null, destination: string) => void
 type FileNameCallback = (error: Error | null, filename: string) => void
@@ -11,15 +12,20 @@ const storage = multer.diskStorage({
         _file: Express.Multer.File,
         cb: DestinationCallback
     ) => {
-        cb(
-            null,
-            join(
-                __dirname,
-                process.env.UPLOAD_PATH_TEMP
-                    ? `../public/${process.env.UPLOAD_PATH_TEMP}`
-                    : '../public'
-            )
+        const uploadDir = join(
+            __dirname,
+            process.env.UPLOAD_PATH_TEMP
+                ? `../public/${process.env.UPLOAD_PATH_TEMP}`
+                : '../public'
         )
+
+        fs.mkdir(uploadDir, { recursive: true }, (err) => {
+            if (err) {
+                console.error('Ошибка при создании директории:', err)
+                return cb(err, '')
+            }
+            cb(null, uploadDir)
+        })
     },
 
     filename: (
@@ -27,7 +33,10 @@ const storage = multer.diskStorage({
         file: Express.Multer.File,
         cb: FileNameCallback
     ) => {
-        cb(null, file.originalname)
+        const ext = path.extname(file.originalname)
+        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`
+        const newFilename = uniqueSuffix + ext
+        cb(null, newFilename)
     },
 })
 
@@ -38,6 +47,8 @@ const types = [
     'image/gif',
     'image/svg+xml',
 ]
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024
 
 const fileFilter = (
     _req: Request,
@@ -51,4 +62,8 @@ const fileFilter = (
     return cb(null, true)
 }
 
-export default multer({ storage, fileFilter })
+export default multer({
+    storage,
+    limits: { fileSize: MAX_FILE_SIZE },
+    fileFilter,
+})
