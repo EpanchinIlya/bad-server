@@ -100,7 +100,7 @@ export function currentUserAccessMiddleware<T>(
 export const authValidation = {
     login: celebrate({
         [Segments.BODY]: Joi.object({
-            login: Joi.string().required().min(3).max(30).trim().messages({
+            email: Joi.string().required().min(3).max(30).trim().messages({
                 'string.base': 'Логин должен быть строкой.',
                 'string.empty': 'Логин не может быть пустым.',
                 'string.min': 'Логин должен содержать не менее {#limit} символов.',
